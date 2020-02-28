@@ -1,0 +1,41 @@
+.manage
+  padding: 60px
+  @include medium
+    padding: 60px 0px
+  button
+    @include button()
+      background-color: $primary_lighten_color
+      color: $black_color
+      &:hover
+        background-color: $primary_color
+  button.btn.btn-sm
+    border: 1px solid $secondary_color
+    i
+      font-size: 16px
+  .tableMain
+    table
+      min-width: 540px
+      th,td
+        @include medium
+          padding: 8px
+          font-size: 14px
+  .tableDetail
+    table
+      min-width: 680px
+      th,td
+        padding: 8px
+        font-size: 14px
+      td
+        vertical-align: middle
+.modal
+  background-color: rgba(0,0,0,0.2)
+.modal-header
+  background-color: $primary_lighten_color
+  span
+    color: $black_color
+  button
+    background-color: transparent
+    span
+      line-height: 30px
+.modal-content
+  border-radius: 3px

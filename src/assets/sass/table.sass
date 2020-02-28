@@ -1,0 +1,32 @@
+.listContent
+  padding: 0px 30px
+  @include medium
+    padding: 0px 15px
+  @include x-small
+    padding: 0px 5px
+    min-width: 310px
+  table
+    thead
+      text-align: center
+      th
+        font-weight: 500
+        letter-spacing: 1px
+        @include medium
+          padding: 8px
+    tbody
+      td
+        text-align: center
+        @include medium
+          padding: 8px
+    tfoot
+      text-align: right
+      td
+        @include medium
+          padding: 8px
+  .infoArea
+    padding: 0px 15px
+    margin: 0px 15px
+    border: 1px solid $secondary_color
+    border-radius: 3px
+    @include medium
+      margin: auto

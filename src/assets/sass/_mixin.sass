@@ -1,0 +1,25 @@
+@mixin large()
+  @media screen and (max-width: 1080px)
+    @content
+
+@mixin medium()
+  @media screen and (max-width: 860px)
+    @content
+
+@mixin small()
+  @media screen and (max-width: 620px)
+    @content
+
+@mixin x-small()
+  @media screen and (max-width: 480px)
+    @content
+
+@mixin size($width,$height)
+  width: $width
+  height: $height
+
+@mixin button()
+  padding: 6px 12px
+  letter-spacing: 1px
+  transition: 0.3s
+  @content
