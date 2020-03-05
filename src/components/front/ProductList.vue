@@ -20,7 +20,7 @@
                 i.fas.fa-thumbs-up.like.liked(v-if="setliked(item)" @click.stop="changeFavorite(item)")
                 i.fas.fa-thumbs-up.like(v-else @click.stop="changeFavorite(item)")
                 i.fas.fa-cart-plus.cart(@click.stop="addtoCart(item.id)" v-if="item.id !== status.loadingItem")
-                i.fas.fa-spinner.fa-spin(v-if="item.id === status.loadingItem")
+                i.fas.fa-spinner.fa-spin.disabled(@click.stop="" v-else)
     <!-- 頁碼 -->
     pagination(:pagination='pagination' @get-pagination='setPagination' v-if="pagination.total_pages > 1")
     ToTop
@@ -264,15 +264,17 @@ export default {
       color: $secondary_color
       margin: 0px 10px
       cursor: pointer
-      &:hover
+      &:not(.disabled):hover
         animation: beat 0.5s
         color: $primary_color
       &.liked
         color: $primary_color
+      &.disabled
+        cursor: default
 .productBox
   position: relative
   &.mask
-    cursor: not-allowed
+    cursor: default
     pointer-events: none
   .soldOut
     position: absolute

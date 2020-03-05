@@ -47,6 +47,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="sass">
-@import "@/assets/sass/all.sass";
 @import "@/assets/sass/navbar.sass";
 </style>

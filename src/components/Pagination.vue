@@ -46,7 +46,7 @@ ul
       color: $primary_color
       border-bottom: 2px solid $primary_color
     &.disabled .pageNumber
-      cursor: not-allowed
+      cursor: default
       pointer-events: none
       &:hover
         color: $secondary_color

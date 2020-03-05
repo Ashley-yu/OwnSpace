@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import $ from 'jquery';
 import HeaderPic from '@/components/HeaderPic.vue';
 
 export default {
@@ -88,10 +89,12 @@ export default {
         product_id: id,
         qty,
       };
+      $('.productBuy').addClass('disabled');
 
       vm.status.loadingItem = id;
       vm.$http.post(api, { data: cart }).then((response) => {
         vm.status.loadingItem = '';
+        $('.productBuy').removeClass('disabled');
         if (!response.data.success) {
           vm.$bus.$emit('message:push', response.data.message, 'danger');
         } else {
@@ -141,7 +144,7 @@ export default {
           text-decoration: none
           color: $primary_color
       &.active
-        cursor: context-menu
+        cursor: default
         color: $secondary_color
 .productDetail
   padding-bottom: 60px
@@ -212,6 +215,8 @@ export default {
           color: $black_color
           &:hover
             background-color: $primary_color
+        &.disabled
+          pointer-events: none
     .productDescription
       margin-top: 5px
 </style>

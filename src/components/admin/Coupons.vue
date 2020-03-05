@@ -227,6 +227,5 @@ export default {
 </script>
 
 <style scoped lang="sass">
-@import "@/assets/sass/all.sass";
 @import "@/assets/sass/dashboard.sass";
 </style>

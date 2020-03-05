@@ -140,11 +140,10 @@ export default {
 
 .itemContent
   tbody
-    tr
+    .itemName
       cursor: pointer
-      .itemName
-        &:hover
-          color: $primary_color
+      &:hover
+        color: $primary_color
 .shop
   @include small
     display: none
@@ -213,7 +212,7 @@ export default {
         background-color: $primary_color
         animation: beat 0.5s
     &.empty
-      cursor: not-allowed
+      cursor: default
       pointer-events: none
       background-color: $secondary_color
 </style>

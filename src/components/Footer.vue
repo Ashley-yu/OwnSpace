@@ -18,10 +18,12 @@
             span.title 聯絡方式
             span.col-xs-6.d-flex.align-items-center
               i.fas.fa-phone
-              span.info 02-1234567
+              span.info
+                a(href="#") 02-1234567
             span.col-xs-6.d-flex.align-items-center
               i.far.fa-envelope
-              span.info ownspace@mail.com
+              span.info
+                a(href="#") ownspace@mail.com
           .col-xs-12.copyright
             span ⓒ AshleyFan 僅個人作品練習，無任何商業用途
               router-link(to="/login")
@@ -34,7 +36,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="sass">
 @import "@/assets/sass/all.sass";
 
@@ -56,9 +57,10 @@ footer
         display: none
     .info
       margin: 0px 5px
-      color: $black_color
       font-weight: 500
       font-size: 16px
+      a
+        color: $black_color
     i
       color: $primary_color
       font-size: 20px

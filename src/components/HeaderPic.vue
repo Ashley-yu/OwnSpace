@@ -10,8 +10,6 @@ export default {
 </script>
 
 <style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-
 .top
   margin: 60px 0px 30px 0px
   height: 240px
