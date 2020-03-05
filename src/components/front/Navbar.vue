@@ -15,13 +15,16 @@
             li.nav-item.dropdown(@click.prevent="getFavorites")
               .nav-link.dropdown-toggle(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
                 i.fas.fa-thumbs-up
-                  span {{ favorLength }}
+                  span(v-if="favorLength > 0") {{ favorLength }}
               .dropdown-menu.dropdown-menu-right
                 table.itemContent
                   tbody.d-flex.justify-content-start.align-items-center.flex-column
                     h3.itemTitle(v-if='favorLength === 0') 還沒有喜歡的商品嗎?
                     h3.itemTitle(v-else) 按讚好物
                     tr(v-for="item in favorites" :key="item.id")
+                      td
+                        i.fas.fa-cart-plus.cartIcon(@click.stop="addtoCart(item.id)" v-if="item.id !== status.loadingItem")
+                        i.fas.fa-spinner.fa-spin.disabled(@click.stop="" v-else)
                       td.itemPicture
                         .picturewrap
                           img(:src="`${item.imageUrl}`", alt="")
@@ -29,10 +32,10 @@
                       td.itemDelete(@click.stop="removeFavorItem(item)")
                         span X
             li.nav-item.dropdown(@click.prevent="getCart")
-              .nav-link.dropdown-toggle(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
-                i.fas.fa-shopping-cart
-                  span {{ cartLength }}
-              .dropdown-menu.dropdown-menu-right
+              .nav-link.dropdown-toggle#cartDropdown(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
+                i.fas.fa-shopping-cart(:class="{'empty': cartLength === 0}")
+                  span(v-if="cartLength > 0") {{ cartLength }}
+              .dropdown-menu.dropdown-menu-right(aria-labelledby="cartDropdown")
                 table.itemContent
                   tbody.d-flex.justify-content-start.align-items-center.flex-column
                     h3.itemTitle(v-if='cartLength === 0') 快將想要的商品丟進來!
@@ -49,7 +52,8 @@
                 .totalInfo
                   div 小計
                   .itemTotal {{ cart.total | currency }}
-                  button.btn.checkOut(@click="$router.push(`/check_order`)" :class="{'empty': !cartLength || cartLength === 0}") 結帳去
+                  button.btn.checkOut(@click="$router.push('/product_list')" v-if="!cartLength || cartLength === 0") 購物去
+                  button.btn.checkOut(@click="$router.push('/check_order')" v-else) 結帳去
 </template>
 
 <script>
@@ -63,6 +67,9 @@ export default {
       cartLength: '', // 購物車商品筆數
       favorites: {}, // 喜歡商品資料
       favorLength: '', // 喜歡商品資料筆數
+      status: {
+        loadingItem: '', // 當筆點選商品 id
+      },
     };
   },
   methods: {
@@ -77,6 +84,10 @@ export default {
         } else {
           vm.cart = response.data.data;
           vm.cartLength = vm.cart.carts.length;
+          // 若購物車無資料則開啟dropdown-menu
+          if (vm.cartLength === 0) {
+            $('#cartDropdown').dropdown('toggle');
+          }
         }
       });
     },
@@ -91,8 +102,8 @@ export default {
         } else {
           // 重新整理 CheckOrder 購物車
           vm.$bus.$emit('checkCart:get');
+          vm.getCart();
         }
-        vm.getCart();
       });
     },
     // 取得喜歡的商品
@@ -111,6 +122,27 @@ export default {
       // 重新整理
       this.$bus.$emit('productFavor:get');
       this.getFavorites();
+    },
+    // 加入購物車，預設數量為 1
+    addtoCart(id, qty = 1) {
+      const vm = this;
+      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
+      const cart = {
+        product_id: id,
+        qty,
+      };
+
+      vm.status.loadingItem = id;
+      vm.$http.post(api, { data: cart }).then((response) => {
+        vm.status.loadingItem = '';
+        if (!response.data.success) {
+          vm.$bus.$emit('message:push', response.data.message, 'danger');
+        } else {
+          vm.getCart();
+          vm.$bus.$emit('checkCart:get');
+          vm.$bus.$emit('message:push', response.data.message, 'success');
+        }
+      });
     },
   },
   created() {
@@ -151,6 +183,12 @@ export default {
   max-width: 330px
   max-height: 360px
   overflow-y: auto
+  .cartIcon
+    font-size: 20px
+    color: $secondary_color
+    cursor: pointer
+    &:hover
+      color: $primary_color
 .itemContent
   color: $black_color
   font-weight: 300
@@ -211,8 +249,8 @@ export default {
       &:hover
         background-color: $primary_color
         animation: beat 0.5s
+#cartDropdown
+  i
     &.empty
-      cursor: default
-      pointer-events: none
-      background-color: $secondary_color
+      animation: wiggle 3s infinite
 </style>

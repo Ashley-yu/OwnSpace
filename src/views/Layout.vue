@@ -30,13 +30,13 @@ export default {
 .v-leave
   opacity: 1
 .v-leave-active
-  transition: opacity .3s
+  transition: opacity $duration
 .v-leave-to
   opacity: 0
 .v-enter
   opacity: 0
 .v-enter-active
-  transition: opacity .3s
+  transition: opacity $duration
 .v-enter-to
   opacity: 1
 </style>

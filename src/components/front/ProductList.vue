@@ -4,9 +4,9 @@
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
       Category(:category='category' :currentOption='isCurrent' @get-category='changeCategory')
-    .container-fluid
+    .container-fluid.content
       .row
-        .col-lg-3.col-md-4.col-sm-6.px-xl-3.px-2(v-for="item in filterProducts" :key="item.id")
+        .col-xl-3.col-lg-4.col-sm-6.px-xl-3.px-3(v-for="item in filterProducts" :key="item.id")
           .productBox(:class="{'mask': !item.is_enabled}" @click="$router.push(`/product_detail/${item.id}`)")
             .soldOut(v-if="!item.is_enabled")
               h6 已售完
@@ -224,14 +224,18 @@ export default {
 <style scoped lang="sass">
 @import "@/assets/sass/all.sass";
 
-.products
-  padding: 0px 15px
+.content
+  padding: 0px 60px
   @include medium
-    padding: 0px 10px
+    padding: 0px 30px
 .productBox
-  margin: 0px 3px 60px 3px
+  margin: 0px 5px 60px 5px
   box-shadow: 0px 0px 5px rgba(0,0,0,0.2)
   cursor: pointer
+  transition: $duration
+  &:hover
+    transform: translate(6px, -6px)
+    box-shadow: -3px 3px 10px rgba(0,0,0,0.2)
   .top
     position: relative
     height: 300px

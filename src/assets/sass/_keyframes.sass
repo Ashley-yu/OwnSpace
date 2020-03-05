@@ -20,3 +20,17 @@
   100%
     transform: translateY(0px)
     opacity: 1
+
+@keyframes wiggle
+  0%, 80%, 100%
+    transform: translate(0px, 0px) rotate(0deg)
+    color: $secondary_color
+  82.5%, 90%
+    transform: rotate(5deg)
+    color: $primary_color
+  85%, 92.5%
+    transform: rotate(-5deg)
+    color: $primary_color
+  87.5%, 95%
+    transform: rotate(5deg)
+    color: $primary_color

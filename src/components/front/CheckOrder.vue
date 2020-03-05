@@ -200,7 +200,7 @@ export default {
         background-color: $primary_color
         border: 1px solid $primary_color
         cursor: pointer
-        transition: 0.3s
+        transition: $duration
         &:hover
           background-color: $primary_darken_color
           color: $white_color

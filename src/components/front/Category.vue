@@ -25,7 +25,7 @@ export default {
   left: 0
   top: 48%
   padding: 16px 0px
-  margin: 0px 15px
+  margin: 0px 60px
   text-align: center
   border: 1px solid $secondary_color
   border-radius: 3px
@@ -39,7 +39,7 @@ export default {
       list-style: none
       padding: 3px 18px
       cursor: pointer
-      transition: 0.3s
+      transition: $duration
       color: $black_color
       position: relative
       @include medium
