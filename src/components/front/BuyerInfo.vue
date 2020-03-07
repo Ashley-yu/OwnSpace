@@ -3,7 +3,7 @@
     <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container-fluid
+    .container
       OrderProgress(:currentStep='step')
       .buyerInfo
         .row.m-0.d-flex.justify-content-center
@@ -12,32 +12,57 @@
               .form-row
                 .form-group.col-sm-6
                   label(for='userName') 收件人姓名
+                    |
+                    span.marker *
                   input.form-control#userName(type="text" name="name" :class="{'is-invalid': errors.has('name')}" v-model="form.user.name" v-validate="'required'" placeholder="請輸入姓名")
-                  //- errors.has 當輸入有誤時顯示
-                  span.text-danger(v-if="errors.has('name')") 請輸入姓名
+                  span.text-danger(v-if="errors.has('name')") {{ errors.first('name') }}
                 .form-group.col-sm-6
                   label(for='usertel') 收件人手機
+                    |
+                    span.marker *
                   input.form-control#userTel(type="tel" name="tel" :class="{'is-invalid': errors.has('tel')}" v-model="form.user.tel" v-validate="'required|cellphone'" placeholder="請輸入手機號碼 (ex: 09xxxxxxxx)" maxlength="10")
-                  span.text-danger(v-if="errors.has('tel')") 請輸入手機號碼
+                  span.text-danger(v-if="errors.has('tel')") {{ errors.first('tel') }}
               .form-row
                 .form-group.col-sm-8
                   label(for='userEmail') 收件人Email
+                    |
+                    span.marker *
                   input.form-control#userEmail(type="email" name="email" :class="{'is-invalid': errors.has('email')}" v-model="form.user.email" v-validate="'required'" placeholder="請輸入Email")
                   span.text-danger(v-if="errors.has('email')") {{ errors.first('email') }}
                 .form-group.col-sm-4
-                  label(for='payment') 付款方式
                   .select-wrapper
+                    label(for='payment') 付款方式
+                      |
+                      span.marker *
                     select#payment.form-control(v-model="form.user.payment")
                       option(value='COD') 貨到付款
                       option(value='CVS') 超商付款
                       option(value='ATM') ATM付款
               .form-group
                 label(for='userAddress') 收件人地址
+                  |
+                  span.marker *
                 input.form-control#userAddress(type="text" name="address" :class="{'is-invalid': errors.has('address')}" v-model="form.user.address" v-validate="'required'" placeholder="請輸入地址")
-                span.text-danger(v-if="errors.has('address')") 請輸入地址
+                span.text-danger(v-if="errors.has('address')") {{ errors.first('address') }}
               .form-group
                 label(for='message') 備註
                 textarea.form-control#message(name="message" cols='10' rows='3' v-model="form.user.message" placeholder="歡迎留下想對我們說的話")
+              .form-group.notice(v-if="form.user.payment === 'CVS'")
+                h5
+                  i.fas.fa-exclamation-circle.mr-3
+                  | 超商付款
+                ul
+                  li 可至7-11，全家，萊爾富，ok便利商店進行列印單據並且繳款。
+                  li 在完成訂單的頁面，會顯示您此筆交易專屬的超商代碼，請記下這組代碼至鄰近的超商利用服務機器列印帳單進行繳費。
+                  li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期超商代碼將失效，並自動取消訂單。
+              .form-group.notice(v-if="form.user.payment === 'ATM'")
+                h5
+                  i.fas.fa-exclamation-circle.mr-3
+                  | ATM付款
+                ul
+                  li 包含實體ATM轉帳，或是網路ATM線上轉帳。
+                  li 在完成訂單的頁面，會顯示您此筆交易專屬的虛擬帳號，請記下這組帳號至鄰近的ATM或網路ATM進行轉帳。
+                  li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期虛擬帳號將失效，並自動取消訂單。
               .d-flex.justify-content-between
                 button.btn(@click.prevent="goBack")
                   i.fas.fa-angle-double-left.mr-1
@@ -82,7 +107,7 @@ export default {
         if (valid) {
           vm.$http.post(url, { data: order }).then((response) => {
             if (response.data.success) {
-              vm.$router.push(`/order_info/${response.data.orderId}`);
+              vm.$router.push(`/order_info/${response.data.orderId}/${vm.form.user.payment}`);
             } else {
               vm.$bus.$emit('message:push', response.data.message, 'danger');
               vm.$router.push('/product_list');
@@ -118,4 +143,16 @@ export default {
       color: $black_color
       &:hover
         background-color: $primary_color
+.marker
+  padding-left: 2px
+  font-size: 20px
+  color: $primary_color
+.notice
+  margin-top: 30px
+  padding: 15px
+  padding-bottom: 0px
+  color: $black_color
+  border-top: 1px solid $primary_color
+  h5
+    color: $primary_darken_color
 </style>

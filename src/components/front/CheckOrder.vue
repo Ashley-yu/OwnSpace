@@ -1,9 +1,8 @@
 <template lang="pug">
   div
-    <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container-fluid
+    .container
       OrderProgress(:currentStep='step')
       .listContent
         .row
@@ -33,7 +32,7 @@
                   td ${{ cart.total }}
                   td
           .col-md-4
-            .infoArea
+            .infoArea.d-flex.justify-content-center.align-items-center.flex-column
               .input-group.couponInfo
                 input.form-control(type='text' placeholder="優惠券代碼" v-model="coupon_code")
                 .input-group-append
@@ -41,7 +40,7 @@
               table.table.totalInfo
                 tbody
                   tr
-                    td 總金額
+                    td 總計金額
                     td.text-right NT {{ cart.total | currency }}
                   tr
                     td 優惠折抵
@@ -156,20 +155,17 @@ export default {
 @import "@/assets/sass/table.sass";
 
 .orderContent
-  tbody
-    tr
-      cursor: pointer
-      .productName
-        &:hover
-          color: $primary_color
+  .productName
+    cursor: pointer
+    &:hover
+      color: $primary_color
 .listContent
-  padding-bottom: 60px
   @include medium
     font-size: 15px
   @include x-small
     font-size: 13px
   .orderImg
-    width: 18%
+    width: 15%
     padding: 3px
   .orderColumn
     width: 15%
@@ -182,13 +178,16 @@ export default {
         font-size: 18px
   .infoArea
     .couponInfo
+      max-width: 380px
       padding: 15px 0px
     .totalInfo
+      max-width: 380px
       td
         border: none
         font-size: 15px
-        @include medium
-          padding: 8px
+        padding: 10px
+        @include small
+          padding: 8px 16px
     .couponInfo
       input
         border: 1px solid $primary_color
@@ -205,6 +204,8 @@ export default {
           background-color: $primary_darken_color
           color: $white_color
     .buyerInfo
+      width: 100%
+      max-width: 380px
       text-align: right
       margin: 15px
       button

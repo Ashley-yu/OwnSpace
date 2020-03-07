@@ -25,6 +25,22 @@ Vue.component('Loading', Loading);
 Vue.filter('currency', currencyFilter);
 Vue.filter('date', dateFilter);
 
+// validator套用欄位文字
+const dictionary = {
+  zh_TW: {
+    messages: {
+      required: field => `請輸入${field}`,
+    },
+    attributes: {
+      name: '姓名',
+      tel: '手機號碼',
+      email: 'Email',
+      address: '地址',
+    },
+  },
+};
+Validator.localize(dictionary);
+
 // validator 自訂手機號碼檢查
 const cellphone = {
   validate: (value) => {

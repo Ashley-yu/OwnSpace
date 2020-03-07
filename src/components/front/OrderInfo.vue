@@ -3,13 +3,13 @@
     <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container-fluid
+    .container
       OrderProgress(:currentStep='step')
       .listContent
         .row
           .col-md-6
             h3 訂單資訊
-            p.text-right 訂購日期 - {{ order.create_at | date }}
+            p.text-right.pr-2 訂購日期 - {{ order.create_at | date }}
             table.table
               thead
                 tr
@@ -44,6 +44,12 @@
                     td.title 地址
                     td.text {{ order.user.address }}
                 tfoot
+                  tr(v-if="userPayment === 'CVS'")
+                    td.title 超商付款代碼
+                    td.text-left.payCode LCB40611000744
+                  tr(v-if="userPayment === 'ATM'")
+                    td.title ATM匯款帳號
+                    td.text-left.payCode (808)9278119118014012
                   tr
                     td.title 付款狀態
                     td.incomplete.text-left(v-if="!order.is_paid") 尚未付款
@@ -55,9 +61,19 @@
                 button.btn(v-else @click.prevent="$router.push('/product_list')")
                   i.fas.fa-store-alt.mr-1
                   | 回到商店
+    #completeModal.modal.fade.p-0(tabindex='-1' role='dialog' aria-hidden='true')
+      .modal-dialog.modal-sm.modal-dialog-centered(role='document')
+        .modal-content.border-0
+          .modal-header
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') &times;
+          .modal-body
+            h3 付款完成
+            i.fas.fa-check-circle.completeIcon
 </template>
 
 <script>
+import $ from 'jquery';
 import HeaderPic from '@/components/HeaderPic.vue';
 import OrderProgress from '@/components/front/OrderProgress.vue';
 
@@ -75,6 +91,7 @@ export default {
       },
       isLoading: false, // loading 圖示顯示狀態
       step: 3, // 變更階段樣式(OrderProgress)
+      userPayment: '', // 付款類型
     };
   },
   methods: {
@@ -104,7 +121,7 @@ export default {
           vm.getOrder();
           // 重新整理 Navbar 購物車
           vm.$bus.$emit('cart:get');
-          vm.$bus.$emit('message:push', response.data.message, 'success');
+          $('#completeModal').modal('show');
         } else {
           vm.$bus.$emit('message:push', response.data.message, 'danger');
         }
@@ -115,6 +132,10 @@ export default {
     // 接訂單編號參數
     this.orderId = this.$route.params.order_id;
     this.getOrder();
+    // 接付款類型變數
+    if (this.$route.params.payment) {
+      this.userPayment = this.$route.params.payment;
+    }
   },
 };
 </script>
@@ -125,7 +146,6 @@ export default {
 @import "@/assets/sass/table.sass";
 
 .listContent
-  padding-bottom: 60px
   @include x-small
     font-size: 15px
   h3
@@ -152,9 +172,27 @@ export default {
       text-align: right
       margin: 15px
       button
+        animation: beat 0.7s infinite
         @include button()
           background-color: $primary_lighten_color
           color: $black_color
           &:hover
             background-color: $primary_color
+    .payCode
+      font-weight: 700
+      color: $title_color
+.modal-header
+  border: none
+  background-color: transparent
+  button
+    background-color: transparent
+.modal-body
+  text-align: center
+  padding-bottom: 30px
+  h3
+    margin-bottom: 15px
+    color: $black_color
+  i
+    font-size: 180px
+    color: $primary_lighten_color
 </style>
