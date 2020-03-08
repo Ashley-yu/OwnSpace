@@ -39,7 +39,7 @@ export default {
     padding: 14px 38px
     margin: 0px 5px
     font-size: 16px
-    border-radius: 3px
+    border-radius: $radius
     border: 1px solid $secondary_color
     color: $black_color
     position: relative

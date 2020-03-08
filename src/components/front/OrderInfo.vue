@@ -44,10 +44,10 @@
                     td.title 地址
                     td.text {{ order.user.address }}
                 tfoot
-                  tr(v-if="userPayment === 'CVS'")
+                  tr(v-if="order.user.payment === 'CVS'")
                     td.title 超商付款代碼
                     td.text-left.payCode LCB40611000744
-                  tr(v-if="userPayment === 'ATM'")
+                  tr(v-if="order.user.payment === 'ATM'")
                     td.title ATM匯款帳號
                     td.text-left.payCode (808)9278119118014012
                   tr
@@ -91,7 +91,6 @@ export default {
       },
       isLoading: false, // loading 圖示顯示狀態
       step: 3, // 變更階段樣式(OrderProgress)
-      userPayment: '', // 付款類型
     };
   },
   methods: {
@@ -132,10 +131,6 @@ export default {
     // 接訂單編號參數
     this.orderId = this.$route.params.order_id;
     this.getOrder();
-    // 接付款類型變數
-    if (this.$route.params.payment) {
-      this.userPayment = this.$route.params.payment;
-    }
   },
 };
 </script>
@@ -149,7 +144,7 @@ export default {
   @include x-small
     font-size: 15px
   h3
-    margin-top: 15px
+    margin-top: $small_space
     font-size: 20px
     font-weight: 400
     color: $primary_darken_color
@@ -170,7 +165,7 @@ export default {
       color: $title_color
     .payment
       text-align: right
-      margin: 15px
+      margin: $small_space
       button
         animation: beat 0.7s infinite
         @include button()
@@ -188,9 +183,9 @@ export default {
     background-color: transparent
 .modal-body
   text-align: center
-  padding-bottom: 30px
+  padding-bottom: $medium_space
   h3
-    margin-bottom: 15px
+    margin-bottom: $small_space
     color: $black_color
   i
     font-size: 180px

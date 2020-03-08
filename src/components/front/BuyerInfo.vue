@@ -44,11 +44,12 @@
                   span.marker *
                 input.form-control#userAddress(type="text" name="address" :class="{'is-invalid': errors.has('address')}" v-model="form.user.address" v-validate="'required'" placeholder="請輸入地址")
                 span.text-danger(v-if="errors.has('address')") {{ errors.first('address') }}
-              .form-group
+              .form-group.mb-5
                 label(for='message') 備註
                 textarea.form-control#message(name="message" cols='10' rows='3' v-model="form.user.message" placeholder="歡迎留下想對我們說的話")
               .form-group.notice(v-if="form.user.payment === 'CVS'")
                 h5
+                  .backText PAYMENT
                   i.fas.fa-exclamation-circle.mr-3
                   | 超商付款
                 ul
@@ -57,6 +58,7 @@
                   li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期超商代碼將失效，並自動取消訂單。
               .form-group.notice(v-if="form.user.payment === 'ATM'")
                 h5
+                  .backText PAYMENT
                   i.fas.fa-exclamation-circle.mr-3
                   | ATM付款
                 ul
@@ -133,11 +135,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="sass">
 @import "@/assets/sass/all.sass";
+@import "@/assets/sass/notice.sass";
 
 .buyerInfo
-  padding-bottom: 60px
+  padding-bottom: $large_space
   button
-    margin: 15px 0px
+    margin: $small_space 0px
     @include button()
       background-color: $primary_lighten_color
       color: $black_color
@@ -147,12 +150,4 @@ export default {
   padding-left: 2px
   font-size: 20px
   color: $primary_color
-.notice
-  margin-top: 30px
-  padding: 15px
-  padding-bottom: 0px
-  color: $black_color
-  border-top: 1px solid $primary_color
-  h5
-    color: $primary_darken_color
 </style>

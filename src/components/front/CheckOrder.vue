@@ -57,6 +57,7 @@
         .row
           .col-sm-12
             .notice
+              .backText NOTICE
               h5
                 i.fas.fa-exclamation-circle.mr-3
                 | 注意事項
@@ -153,6 +154,7 @@ export default {
 <style scoped lang="sass">
 @import "@/assets/sass/all.sass";
 @import "@/assets/sass/table.sass";
+@import "@/assets/sass/notice.sass";
 
 .orderContent
   .productName
@@ -179,7 +181,7 @@ export default {
   .infoArea
     .couponInfo
       max-width: 380px
-      padding: 15px 0px
+      padding: $small_space 0px
     .totalInfo
       max-width: 380px
       td
@@ -207,19 +209,11 @@ export default {
       width: 100%
       max-width: 380px
       text-align: right
-      margin: 15px
+      margin: $small_space
       button
         @include button()
           background-color: rgba($primary_color, 0.7)
           color: $black_color
           &:hover
             background-color: $primary_color
-  .notice
-    margin-top: 30px
-    padding: 15px
-    padding-bottom: 0px
-    color: $black_color
-    border-top: 1px solid $primary_color
-    h5
-      color: $primary_darken_color
 </style>

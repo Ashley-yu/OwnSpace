@@ -43,7 +43,7 @@ footer
   background-color: $white_color
   border-top: 1px solid $secondary_color
   .container
-    padding: 60px 15px
+    padding: $large_space $small_space
     .row
       @include medium
         flex-direction: column

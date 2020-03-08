@@ -38,7 +38,7 @@ const routes = [
         component: () => import('../components/front/BuyerInfo.vue'),
       },
       {
-        path: 'order_info/:order_id/:payment',
+        path: 'order_info/:order_id',
         name: 'OrderInfo',
         component: () => import('../components/front/OrderInfo.vue'),
       },

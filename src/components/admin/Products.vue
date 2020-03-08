@@ -66,8 +66,8 @@
                   span.text-danger(v-if="errors.has('title')") 請輸入商品名稱
                 .form-row
                   .form-group.col-md-6
-                    label(for='category') 類別
                     .select-wrapper
+                      label(for='category') 類別
                       select#category.form-control(type='text' v-model='tempProduct.category')
                         option(v-for="item in category" :key="item.id") {{ item }}
                   .form-group.col-md-6

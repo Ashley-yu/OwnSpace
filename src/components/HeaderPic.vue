@@ -10,8 +10,10 @@ export default {
 </script>
 
 <style scoped lang="sass">
+@import "@/assets/sass/all.sass";
+
 .top
-  margin: 60px 0px 30px 0px
+  margin: $large_space 0px $medium_space 0px
   height: 240px
   background-image: url('../assets/img/white_bok.jpg')
   background-size: cover

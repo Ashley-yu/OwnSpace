@@ -151,7 +151,7 @@ header
   .explore
     position: absolute
     bottom: 5%
-    left: calc(50% - 15px)
+    left: calc(50% - $small_space)
     font-size: 30px
     color: $white_color
     z-index: 3
@@ -255,7 +255,7 @@ header
   background-size: cover
   background-position: top center
   background-attachment: fixed
-  margin-top: 60px
+  margin-top: $large_space
   padding: 180px
   @include large
     padding: 140px
@@ -265,7 +265,7 @@ header
     color: $secondary_color
   input
     margin: 10px
-    padding: 6px 15px
+    padding: 6px $small_space
     letter-spacing: 2px
     font-size: 18px
     background-color: rgba($black_color, 0.3)

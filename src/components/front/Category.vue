@@ -25,10 +25,10 @@ export default {
   left: 0
   top: 48%
   padding: 16px 0px
-  margin: 0px 60px
+  margin: 0px $large_space
   text-align: center
   border: 1px solid $secondary_color
-  border-radius: 3px
+  border-radius: $radius
   @include medium
     border: none
   ul

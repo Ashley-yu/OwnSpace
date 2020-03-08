@@ -230,7 +230,7 @@ export default {
         color: $primary_darken_color
 .totalInfo
   text-align: center
-  margin-top: 15px
+  margin-top: $small_space
   div
     display: inline-block
     width: 45%

@@ -61,16 +61,16 @@ html,body
     border: 3px solid $primary_color
     form
       height: 100%
-      padding: 30px
+      padding: $medium_space
       @include x-small()
-        padding: 15px
+        padding: $small_space
       h3
         color: $black_color
       #inputEmail,#inputPassword
         letter-spacing: 1px
         border: 1px solid $secondary_color
       button
-        margin-top: 30px
+        margin-top: $medium_space
         @include button()
           border: 1.5px solid rgba($primary_color, 0.7)
           &:hover

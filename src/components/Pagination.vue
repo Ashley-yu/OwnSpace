@@ -31,7 +31,7 @@ ul
   padding: 0
   margin: 0
   border: 1px solid $secondary_color
-  border-radius: 3px
+  border-radius: $radius
   .page
     display: inline-block
     list-style: none

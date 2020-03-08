@@ -225,11 +225,11 @@ export default {
 @import "@/assets/sass/all.sass";
 
 .content
-  padding: 0px 60px
+  padding: 0px $large_space
   @include medium
-    padding: 0px 30px
+    padding: 0px $medium_space
 .productBox
-  margin: 0px 5px 60px 5px
+  margin: 0px 5px $large_space 5px
   box-shadow: 0px 0px 5px rgba(0,0,0,0.2)
   cursor: pointer
   transition: $duration
@@ -248,14 +248,14 @@ export default {
       top: 9px
       right: 9px
       padding: 3px 10px
-      border-radius: 3px
+      border-radius: $radius
       font-weight: 500
       font-size: 14px
       letter-spacing: 1px
       color: $white_color
       background-color: $title_color
   .bottom
-    padding: 15px
+    padding: $small_space
     h3
       font-size: 18px
       font-weight: 400
@@ -264,7 +264,7 @@ export default {
       letter-spacing: 1px
       color: $black_color
     i
-      font-size: 20px
+      font-size: 24px
       color: $secondary_color
       margin: 0px 10px
       cursor: pointer
