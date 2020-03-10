@@ -72,14 +72,27 @@
                 button.btn(type="submit")
                   | 下一步
                   i.fas.fa-angle-double-right.ml-1
+    #leaveBuyerModal.modal.fade.p-0(tabindex='-1' role='dialog' aria-hidden='true' data-backdrop='static')
+      .modal-dialog.modal-dialog-centered(role='document')
+        .modal-content.border-0
+          .modal-body
+            p 尚未完成訂購流程，請確認是否離開此頁?
+          .modal-footer
+            button.btn.cancel(type='button' data-dismiss='modal') 取消
+            button.btn.confirm(type='button' data-dismiss='modal') 確定
 </template>
 
 <script>
+import $ from 'jquery';
 import HeaderPic from '@/components/HeaderPic.vue';
 import OrderProgress from '@/components/front/OrderProgress.vue';
 
 export default {
   name: 'BuyerInfo',
+  components: {
+    HeaderPic,
+    OrderProgress,
+  },
   data() {
     return {
       form: {
@@ -94,6 +107,9 @@ export default {
       },
       isLoading: false, // loading 圖示顯示狀態
       step: 2, // 變更階段樣式(OrderProgress)
+      isNext: false, // 是否為上一步/下一步
+      cartData: {}, // 取得購物資料
+      isConfirm: false, // 是否已呼叫API存購物車商品
     };
   },
   methods: {
@@ -103,13 +119,17 @@ export default {
       const url = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/order`;
       const order = vm.form;
 
+      vm.isNext = true;
       vm.isLoading = true;
       // 送出時套件驗證
       vm.$validator.validate().then((valid) => {
         if (valid) {
           vm.$http.post(url, { data: order }).then((response) => {
             if (response.data.success) {
-              vm.$router.push(`/order_info/${response.data.orderId}/${vm.form.user.payment}`);
+              // 清除localStorage cart資料
+              localStorage.removeItem('cart');
+              vm.$bus.$emit('cart:get');
+              vm.$router.push(`/order_info/${response.data.orderId}`);
             } else {
               vm.$bus.$emit('message:push', response.data.message, 'danger');
               vm.$router.push('/product_list');
@@ -122,32 +142,53 @@ export default {
       });
     },
     goBack() {
+      this.isNext = true;
       this.$router.go(-1);
     },
+    // 刪除確認購買商品
+    cancelCart() {
+      const vm = this;
+      const getUrl = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
+
+      vm.$http.get(getUrl).then((response) => {
+        if (!response.data.success) {
+          vm.$bus.$emit('message:push', response.data.message, 'danger');
+        } else {
+          vm.cartData = response.data.data;
+          if (vm.cartData.carts.length > 0) {
+            vm.isConfirm = true;
+          } else {
+            vm.isConfirm = false;
+          }
+
+          if (vm.isConfirm) {
+            vm.cartData.carts.forEach((item) => {
+              const delUurl = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${item.id}`;
+              vm.$http.delete(delUurl).then((res) => {
+                if (!res.data.success) {
+                  vm.$bus.$emit('message:push', res.data.message, 'danger');
+                }
+              });
+            });
+          }
+        }
+      });
+    },
   },
-  components: {
-    HeaderPic,
-    OrderProgress,
+  beforeRouteLeave(to, from, next) {
+    const vm = this;
+    if (vm.isNext) {
+      next();
+    } else {
+      $('#leaveBuyerModal').modal('show');
+      $('.confirm').on('click', () => {
+        vm.cancelCart();
+        next();
+      });
+      $('.cancel').on('click', () => {
+        next(false);
+      });
+    }
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-@import "@/assets/sass/notice.sass";
-
-.buyerInfo
-  padding-bottom: $large_space
-  button
-    margin: $small_space 0px
-    @include button()
-      background-color: $primary_lighten_color
-      color: $black_color
-      &:hover
-        background-color: $primary_color
-.marker
-  padding-left: 2px
-  font-size: 20px
-  color: $primary_color
-</style>

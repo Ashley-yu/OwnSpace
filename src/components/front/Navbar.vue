@@ -12,18 +12,18 @@
                 i.fas.fa-store-alt.mr-1
                 span.shop 逛商店
           ul.navbar-nav
-            li.nav-item.dropdown(@click.prevent="getFavorites")
-              .nav-link.dropdown-toggle(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
+            li.nav-item.dropdown(:class="{'avoid': avoidClick}" @click.prevent="getFavorites")
+              .nav-link.dropdown-toggle#favorDropdown(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
                 i.fas.fa-thumbs-up
                   span(v-if="favorLength > 0") {{ favorLength }}
-              .dropdown-menu.dropdown-menu-right
+              .dropdown-menu.dropdown-menu-right(aria-labelledby="favorDropdown")
                 table.itemContent
                   tbody.d-flex.justify-content-start.align-items-center.flex-column
                     h3.itemTitle(v-if='favorLength === 0') 還沒有喜歡的商品嗎?
                     h3.itemTitle(v-else) 按讚好物
                     tr(v-for="item in favorites" :key="item.id")
                       td
-                        i.fas.fa-cart-plus.cartIcon(@click.stop="addtoCart(item.id)" v-if="item.id !== status.loadingItem")
+                        i.fas.fa-cart-plus.cartIcon(@click.stop="addtoCart(item)" v-if="item.id !== status.loadingItem")
                         i.fas.fa-spinner.fa-spin.disabled(@click.stop="" v-else)
                       td.itemPicture
                         .picturewrap
@@ -31,7 +31,7 @@
                       td.itemName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
                       td.itemDelete(@click.stop="removeFavorItem(item)")
                         span X
-            li.nav-item.dropdown(@click.prevent="getCart")
+            li.nav-item.dropdown(:class="{'avoid': avoidClick}" @click.prevent="getCart")
               .nav-link.dropdown-toggle#cartDropdown(data-toggle='dropdown' aria-haspopup="true" aria-expanded="false")
                 i.fas.fa-shopping-cart(:class="{'empty': cartLength === 0}")
                   span(v-if="cartLength > 0") {{ cartLength }}
@@ -40,18 +40,18 @@
                   tbody.d-flex.justify-content-start.align-items-center.flex-column
                     h3.itemTitle(v-if='cartLength === 0') 快將想要的商品丟進來!
                     h3.itemTitle(v-else) 購物車
-                    tr(v-for="item in cart.carts" :key="item.id")
+                    tr(v-for="item in cart" :key="item.id")
                       td.itemPicture
                         .picturewrap
-                          img(:src="`${item.product.imageUrl}`", alt="")
-                      td.itemName(@click="$router.push(`/product_detail/${item.product_id}`)") {{ item.product.title }}
+                          img(:src="`${item.imageUrl}`", alt="")
+                      td.itemName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
                       td x{{ item.qty }}
                       td {{ item.total | currency }}
                       td.itemDelete(@click.stop="removeCartItem(item.id)")
                         span X
                 .totalInfo
                   div 小計
-                  .itemTotal {{ cart.total | currency }}
+                  .itemTotal {{ total | currency }}
                   button.btn.checkOut(@click="$router.push('/product_list')" v-if="!cartLength || cartLength === 0") 購物去
                   button.btn.checkOut(@click="$router.push('/check_order')" v-else) 結帳去
 </template>
@@ -63,48 +63,44 @@ export default {
   name: 'Navbar',
   data() {
     return {
-      cart: {}, // 購物車資料
+      cart: {}, // 購物車資料(localstorage)
       cartLength: '', // 購物車商品筆數
       favorites: {}, // 喜歡商品資料
       favorLength: '', // 喜歡商品資料筆數
       status: {
         loadingItem: '', // 當筆點選商品 id
       },
+      total: 0, // 小計金額
     };
   },
   methods: {
     // 取得購物車
     getCart() {
       const vm = this;
-      const url = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
-
-      vm.$http.get(url).then((response) => {
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          vm.cart = response.data.data;
-          vm.cartLength = vm.cart.carts.length;
-          // 若購物車無資料則開啟dropdown-menu
-          if (vm.cartLength === 0) {
-            $('#cartDropdown').dropdown('toggle');
-          }
-        }
-      });
+      vm.cart = JSON.parse(localStorage.getItem('cart')) || [];
+      vm.cartLength = this.cart.length;
+      // 計算小計金額
+      vm.total = 0;
+      vm.cart.forEach((item) => { vm.total += item.total; });
     },
     // 刪除購物車商品
     removeCartItem(id) {
       const vm = this;
-      const url = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${id}`;
+      let delIndex = -1;
 
-      vm.$http.delete(url).then((response) => {
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          // 重新整理 CheckOrder 購物車
-          vm.$bus.$emit('checkCart:get');
-          vm.getCart();
-        }
-      });
+      if (vm.cart.length > 0) {
+        vm.cart.forEach((item, index) => {
+          if (item.id === id) {
+            delIndex = index;
+          }
+        });
+      }
+      vm.cart.splice(delIndex, 1);
+
+      localStorage.setItem('cart', JSON.stringify(vm.cart));
+      // 重新整理 CheckOrder 購物車
+      vm.$bus.$emit('checkCart:get');
+      vm.getCart();
     },
     // 取得喜歡的商品
     getFavorites() {
@@ -124,31 +120,71 @@ export default {
       this.getFavorites();
     },
     // 加入購物車，預設數量為 1
-    addtoCart(id, qty = 1) {
+    addtoCart(product, qty = 1) {
       const vm = this;
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
-      const cart = {
-        product_id: id,
-        qty,
-      };
+      let productIndex = -1;
 
-      vm.status.loadingItem = id;
-      vm.$http.post(api, { data: cart }).then((response) => {
-        vm.status.loadingItem = '';
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          vm.getCart();
-          vm.$bus.$emit('checkCart:get');
-          vm.$bus.$emit('message:push', response.data.message, 'success');
-        }
-      });
+      vm.status.loadingItem = product.id;
+      vm.getCart();
+      if (vm.cart.length > 0) {
+        vm.cart.forEach((item, index) => {
+          if (item.id === product.id) {
+            productIndex = index;
+          }
+        });
+      }
+
+      if (productIndex === -1) {
+        const total = parseInt((product.price * qty), 10);
+        // 不存在則加入陣列
+        vm.$set(product, 'qty', qty);
+        vm.$set(product, 'total', total);
+        vm.cart.push(product);
+      } else {
+        // 存在則先計算數量
+        const tempCart = Object.assign({}, vm.cart[productIndex]);
+        tempCart.qty += qty;
+        const total = parseInt((product.price * tempCart.qty), 10);
+        tempCart.total = total;
+        // 刪除該筆資料
+        vm.cart.splice(productIndex, 1);
+        // 將新資料存入陣列
+        vm.cart.push(tempCart);
+      }
+
+      // 儲存至 localStorage
+      localStorage.setItem('cart', JSON.stringify(vm.cart));
+      // 重新整理
+      vm.getCart();
+      // 重新整理 CheckOrder 購物車
+      vm.$bus.$emit('checkCart:get');
+      vm.$bus.$emit('message:push', '商品已加入購物車', 'success');
+      vm.status.loadingItem = '';
+    },
+  },
+  watch: {
+    // 若購物車無資料則開啟dropdown-menu
+    cartLength(value) {
+      if (value === 0) {
+        $('#cartDropdown').dropdown('show');
+      }
+    },
+  },
+  computed: {
+    // 結帳階段避免navbar購物車被異動
+    avoidClick() {
+      if (this.$route.path === '/check_order' || this.$route.path === '/buyer_info') {
+        $('#cartDropdown').dropdown('hide');
+        $('#favorDropdown').dropdown('hide');
+        return true;
+      }
+      return false;
     },
   },
   created() {
     const vm = this;
     vm.getCart();
-    vm.$bus.$on('cart:get', () => vm.getCart());
+    vm.$bus.$on('cart:get', (status = 0) => vm.getCart(status));
     vm.getFavorites();
     vm.$bus.$on('favor:get', () => vm.getFavorites());
   },
@@ -164,93 +200,3 @@ export default {
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-@import "@/assets/sass/navbar.sass";
-
-.itemContent
-  tbody
-    .itemName
-      cursor: pointer
-      &:hover
-        color: $primary_color
-.shop
-  @include small
-    display: none
-.dropdown-menu
-  max-width: 330px
-  max-height: 360px
-  overflow-y: auto
-  .cartIcon
-    font-size: 20px
-    color: $secondary_color
-    cursor: pointer
-    &:hover
-      color: $primary_color
-.itemContent
-  color: $black_color
-  font-weight: 300
-  @include small
-    width: 270px
-  tbody
-    padding: 3px 10px
-    @include small
-      padding: 3px 5px
-  td
-    padding: 5px
-  tr
-    margin: 3px
-    border-bottom: 1px solid $secondary_color
-  .itemTitle
-    text-align: center
-    font-size: 18px
-    font-weight: 300
-    letter-spacing: 1px
-    margin: 0
-  .itemPicture
-    .picturewrap
-      min-width: 45px
-      height: 70px
-      img
-        +size(100%,100%)
-        object-fit: cover
-        object-position: 50% 50%
-  .itemName
-    width: 50%
-    font-size: 14px
-  .itemDelete
-    width: 5%
-    font-weight: 500
-    text-align: center
-    span
-      cursor: pointer
-      &:hover
-        color: $primary_darken_color
-.totalInfo
-  text-align: center
-  margin-top: $small_space
-  div
-    display: inline-block
-    width: 45%
-    font-size: 16px
-    font-weight: 300
-  .itemTotal
-    padding-right: 18px
-    text-align: right
-  .checkOut
-    width: 90%
-    margin-top: 10px
-    @include button()
-      border: none
-      background-color: $primary_lighten_color
-      color: $black_color
-      &:hover
-        background-color: $primary_color
-        animation: beat 0.5s
-#cartDropdown
-  i
-    &.empty
-      animation: wiggle 3s infinite
-</style>

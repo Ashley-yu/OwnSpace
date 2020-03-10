@@ -1,6 +1,5 @@
 <template lang="pug">
   .productDetail
-    <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
       nav.bookmark(aria-label='breadcrumb')
@@ -31,10 +30,10 @@
                 .countNumber.d-flex.justify-content-start.align-items-center
                   button.btn.minus(@click="changeQty(-1)")
                     i.fas.fa-minus
-                  input.productNumber(type='number' max='10' min='1' v-model="productNum")
+                  input.productNumber(type='number' max='10' min='1' v-model="productNum" @change="changeNumber(productNum)")
                   button.btn.add(@click="changeQty(1)")
                     i.fas.fa-plus
-                button.btn.productBuy(@click.prevnt="addtoCart(product.id, productNum)")
+                button.btn.productBuy(@click.prevnt="addtoCart(product, productNum)")
                   i.fas.fa-shopping-cart.mr-1(v-if="!status.loadingItem")
                   i.fas.fa-spinner.fa-spin.mr-1(v-else)
                   | 加入購物車
@@ -84,7 +83,6 @@
 </template>
 
 <script>
-import $ from 'jquery';
 import HeaderPic from '@/components/HeaderPic.vue';
 
 export default {
@@ -101,7 +99,8 @@ export default {
       status: {
         loadingItem: '', // 當筆點選商品 id
       },
-      products: [], // 所有商品資料
+      products: [], // 所有商品資料(類似商品使用)
+      cart: [], // 存 localstorage-購物車 資料
     };
   },
   methods: {
@@ -121,32 +120,65 @@ export default {
         }
       });
     },
-    // 加入購物車，預設數量為 1
-    addtoCart(id, qty = 1) {
+    // 取得購物車
+    getCart() {
       const vm = this;
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
-      const cart = {
-        product_id: id,
-        qty,
-      };
-      $('.productBuy').addClass('disabled');
+      vm.cart = JSON.parse(localStorage.getItem('cart')) || [];
+      vm.cartLength = this.cart.length;
+      // 計算小計金額
+      vm.total = 0;
+      vm.cart.forEach((item) => { vm.total += item.total; });
+    },
+    // 加入購物車，預設數量為 1
+    addtoCart(product, qty = 1) {
+      const vm = this;
+      let productIndex = -1;
 
-      vm.status.loadingItem = id;
-      vm.$http.post(api, { data: cart }).then((response) => {
-        vm.status.loadingItem = '';
-        $('.productBuy').removeClass('disabled');
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          // 重新整理 Navbar 購物車
-          vm.$bus.$emit('cart:get');
-          vm.$bus.$emit('message:push', response.data.message, 'success');
-        }
-      });
+      vm.status.loadingItem = product.id;
+      vm.getCart();
+      if (vm.cart.length > 0) {
+        vm.cart.forEach((item, index) => {
+          if (item.id === product.id) {
+            productIndex = index;
+          }
+        });
+      }
+
+      if (productIndex === -1) {
+        const total = parseInt((product.price * qty), 10);
+        // 不存在則加入陣列
+        vm.$set(product, 'qty', qty);
+        vm.$set(product, 'total', total);
+        vm.cart.push(product);
+      } else {
+        // 存在則先計算數量
+        const tempCart = Object.assign({}, vm.cart[productIndex]);
+        tempCart.qty += qty;
+        const total = parseInt((product.price * tempCart.qty), 10);
+        tempCart.total = total;
+        // 刪除該筆資料
+        vm.cart.splice(productIndex, 1);
+        // 將新資料存入陣列
+        vm.cart.push(tempCart);
+      }
+
+      // 儲存至 localStorage
+      localStorage.setItem('cart', JSON.stringify(vm.cart));
+      // 重新整理
+      vm.getCart();
+      // 重新整理 Navbar 購物車
+      vm.$bus.$emit('cart:get');
+      vm.$bus.$emit('message:push', '商品已加入購物車', 'success');
+      vm.status.loadingItem = '';
     },
     // 商品數量變更做判斷
     changeQty(num) {
       const qty = this.productNum + num;
+      this.changeNumber(qty);
+    },
+    // 商品數量欄位變動時判斷
+    changeNumber(num) {
+      const qty = num;
       if (qty >= 10) {
         this.productNum = 10;
       } else if (qty <= 1) {
@@ -183,141 +215,7 @@ export default {
     this.productId = this.$route.params.product_id;
     this.getProduct();
     this.getProducts();
+    this.getCart();
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-@import "@/assets/sass/notice.sass";
-
-.bookmark
-  position: absolute
-  padding: $small_space
-  bottom: 15%
-  left: $large_space
-  @include medium
-    left: $small_space
-  .breadcrumb
-    background-color: transparent
-    .breadcrumb-item
-      cursor: pointer
-      color: $black_color
-      font-weight: 300
-      a
-        color: $black_color
-        &:hover
-          text-decoration: none
-          color: $primary_color
-      &.active
-        cursor: default
-        color: $secondary_color
-.productDetail
-  padding-bottom: $large_space
-.productPicture
-  position: relative
-  height: 80%
-  padding-bottom: 75%
-  img
-    position: absolute
-    +size(100%,100%)
-    top: -20%
-    object-fit: cover
-    object-position: 50% 50%
-    border: 10px solid $white_color
-    transition: $duration
-    @include medium
-      top: 0
-      border: none
-.productInfo
-  padding: 0px
-  @include small
-    padding: $small_space
-  li
-    list-style: none
-    p
-      margin: 0
-    .productTitle
-      position: relative
-      margin-bottom: $medium_space
-      margin-top: $small_space
-      &::after
-        content: ''
-        +size(60%, 8px)
-        position: absolute
-        bottom: -2px
-        left: $medium_space
-        background-color: rgba($primary_color, 0.5)
-    .productOriginal
-      font-size: 14px
-      text-decoration: line-through
-      color: $black_color
-    .productPrice
-      margin-bottom: $small_space
-      font-size: 18px
-      font-weight: 500
-    .form-control
-      border: none
-      height: 100%
-      padding: 0
-      .countNumber
-        input
-        .minus,.add
-          padding: 3px 10px
-          border: 1px solid $secondary_color
-          &:hover
-            color: $primary_color
-            border: 1px solid $primary_color
-        .minus
-          border-radius: $radius 0px 0px $radius
-        .add
-          border-radius: 0px $radius $radius 0px
-        .productNumber
-          text-align: center
-          width: 15%
-          padding: 3px 10px
-          border: 1px solid $secondary_color
-          border-radius: 0px
-          -webkit-border-radius: 0px
-          -moz-border-radius: 0px
-      .productBuy
-        margin: $small_space 0px
-        @include button()
-          background-color: $primary_lighten_color
-          color: $black_color
-          &:hover
-            background-color: $primary_color
-        &.disabled
-          pointer-events: none
-    .productDescription
-      margin-top: 5px
-.similarContent
-  padding: $medium_space
-  margin-top: $small_space
-  border: 1px solid $secondary_color
-  border-radius: $radius
-  .similar
-    overflow-x: scroll
-    flex-wrap: nowrap
-    padding: $small_space 0px
-    @include small
-      margin: 0
-    .productCard
-      padding: 5px
-      box-shadow: 0px 0px 5px rgba(0,0,0,0.2)
-      color: $black_color
-      cursor: pointer
-      &:hover
-        color: $primary_color
-      .imgWrap
-        height: 180px
-        // @include small
-        //   height: 210px
-        img
-          +size(100%,100%)
-          object-fit: cover
-          object-position: 50% 50%
-      .cardText
-        padding: 0px 3px
-</style>

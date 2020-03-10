@@ -4,5 +4,5 @@
 </template>
 
 <style lang="sass">
-@import "@/assets/sass/_reset.sass";
+@import "@/assets/sass/all.sass";
 </style>

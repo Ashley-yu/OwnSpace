@@ -4,7 +4,7 @@
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
       Category(:category='category' :currentOption='isCurrent' @get-category='changeCategory')
-    .container-fluid.content
+    .container-fluid.productsContent
       .row
         .col-xl-3.col-lg-4.col-sm-6.px-xl-3.px-3(v-for="item in filterProducts" :key="item.id")
           .productBox(:class="{'mask': !item.is_enabled}" @click="$router.push(`/product_detail/${item.id}`)")
@@ -19,7 +19,7 @@
                 .price NT {{ item.price | currency }}
                 i.fas.fa-thumbs-up.like.liked(v-if="setliked(item)" @click.stop="changeFavorite(item)")
                 i.fas.fa-thumbs-up.like(v-else @click.stop="changeFavorite(item)")
-                i.fas.fa-cart-plus.cart(@click.stop="addtoCart(item.id)" v-if="item.id !== status.loadingItem")
+                i.fas.fa-cart-plus.cart(@click.stop="addtoCart(item)" v-if="item.id !== status.loadingItem")
                 i.fas.fa-spinner.fa-spin.disabled(@click.stop="" v-else)
     <!-- 頁碼 -->
     pagination(:pagination='pagination' @get-pagination='setPagination' v-if="pagination.total_pages > 1")
@@ -57,7 +57,9 @@ export default {
         loadingItem: '', // 當筆點選商品 id
       },
       isLoading: false, // loading 圖示顯示狀態
-      favorites: [], // 存 localstorage 資料
+      favorites: [], // 存 localstorage-案讚商品 資料
+      cart: [], // 存 localstorage-購物車 資料
+      // tempCart: [], // 暫存購物車變更資料
     };
   },
   methods: {
@@ -135,30 +137,54 @@ export default {
       this.currentPageNum = 1;
     },
     // 加入購物車，預設數量為 1
-    addtoCart(id, qty = 1) {
+    addtoCart(product, qty = 1) {
       const vm = this;
-      const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
-      const cart = {
-        product_id: id,
-        qty,
-      };
+      let productIndex = -1;
 
-      vm.status.loadingItem = id;
-      vm.$http.post(api, { data: cart }).then((response) => {
-        vm.status.loadingItem = '';
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          // 重新整理 Navbar 購物車
-          vm.$bus.$emit('cart:get');
-          vm.$bus.$emit('message:push', response.data.message, 'success');
-        }
-      });
+      vm.status.loadingItem = product.id;
+      vm.getCart();
+      if (vm.cart.length > 0) {
+        vm.cart.forEach((item, index) => {
+          if (item.id === product.id) {
+            productIndex = index;
+          }
+        });
+      }
+
+      if (productIndex === -1) {
+        const total = parseInt((product.price * qty), 10);
+        // 不存在則加入陣列
+        vm.$set(product, 'qty', qty);
+        vm.$set(product, 'total', total);
+        vm.cart.push(product);
+      } else {
+        // 存在則先計算數量
+        const tempCart = Object.assign({}, vm.cart[productIndex]);
+        tempCart.qty += qty;
+        const total = parseInt((product.price * tempCart.qty), 10);
+        tempCart.total = total;
+        // 刪除該筆資料
+        vm.cart.splice(productIndex, 1);
+        // 將新資料存入陣列
+        vm.cart.push(tempCart);
+      }
+
+      // 儲存至 localStorage
+      localStorage.setItem('cart', JSON.stringify(vm.cart));
+      // 重新整理
+      vm.getCart();
+      // 重新整理 Navbar 購物車
+      vm.$bus.$emit('cart:get');
+      vm.$bus.$emit('message:push', '商品已加入購物車', 'success');
+      vm.status.loadingItem = '';
+    },
+    // 取得購物車資料
+    getCart() {
+      this.cart = JSON.parse(localStorage.getItem('cart')) || [];
     },
     // 取得喜歡的商品
     getFavorites() {
       this.favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-      this.favorLength = this.favorites.length;
     },
     // 變更喜愛的商品資料(新增/移除)
     changeFavorite(product) {
@@ -214,88 +240,9 @@ export default {
       vm.isCurrent = vm.$route.params.category;
     }
     vm.getProducts();
+    vm.getCart();
     vm.getFavorites();
     vm.$bus.$on('productFavor:get', () => vm.getFavorites());
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-
-.content
-  padding: 0px $large_space
-  @include medium
-    padding: 0px $medium_space
-.productBox
-  margin: 0px 5px $large_space 5px
-  box-shadow: 0px 0px 5px rgba(0,0,0,0.2)
-  cursor: pointer
-  transition: $duration
-  &:hover
-    transform: translate(6px, -6px)
-    box-shadow: -3px 3px 10px rgba(0,0,0,0.2)
-  .top
-    position: relative
-    height: 300px
-    img
-      +size(100%,100%)
-      object-fit: cover
-      object-position: 50% 50%
-    .tag
-      position: absolute
-      top: 9px
-      right: 9px
-      padding: 3px 10px
-      border-radius: $radius
-      font-weight: 500
-      font-size: 14px
-      letter-spacing: 1px
-      color: $white_color
-      background-color: $title_color
-  .bottom
-    padding: $small_space
-    h3
-      font-size: 18px
-      font-weight: 400
-    .price
-      width: 80%
-      letter-spacing: 1px
-      color: $black_color
-    i
-      font-size: 24px
-      color: $secondary_color
-      margin: 0px 10px
-      cursor: pointer
-      &:not(.disabled):hover
-        animation: beat 0.5s
-        color: $primary_color
-      &.liked
-        color: $primary_color
-      &.disabled
-        cursor: default
-.productBox
-  position: relative
-  &.mask
-    cursor: default
-    pointer-events: none
-  .soldOut
-    position: absolute
-    +size(100%, 100%)
-    top: 0
-    left: 0
-    background-color: rgba(0,0,0,0.5)
-    z-index: 1
-    h6
-      position: absolute
-      top: 50%
-      left: 50%
-      transform: translateX(-50%) translateY(-50%)
-      +size(50%, 45px)
-      text-align: center
-      font-size: 24
-      line-height: 40px
-      color: $white_color
-      border: 2px solid $white_color
-</style>

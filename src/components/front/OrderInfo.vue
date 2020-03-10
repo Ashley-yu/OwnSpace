@@ -67,9 +67,9 @@
           .modal-header
             button.close(type='button' data-dismiss='modal' aria-label='Close')
               span(aria-hidden='true') &times;
-          .modal-body
+          .modal-body.completeMessage
             h3 付款完成
-            i.fas.fa-check-circle.completeIcon
+            i.fas.fa-check-circle
 </template>
 
 <script>
@@ -134,60 +134,3 @@ export default {
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="sass">
-@import "@/assets/sass/all.sass";
-@import "@/assets/sass/table.sass";
-
-.listContent
-  @include x-small
-    font-size: 15px
-  h3
-    margin-top: $small_space
-    font-size: 20px
-    font-weight: 400
-    color: $primary_darken_color
-  .infoArea
-    // 解決email換行問題
-    table
-      table-layout: fixed
-      td
-        word-wrap: break-word
-    .title
-      width: 30%
-      text-align: left
-    .text
-      text-align: left
-    .incomplete
-      color: $primary_darken_color
-    .complete
-      color: $title_color
-    .payment
-      text-align: right
-      margin: $small_space
-      button
-        animation: beat 0.7s infinite
-        @include button()
-          background-color: $primary_lighten_color
-          color: $black_color
-          &:hover
-            background-color: $primary_color
-    .payCode
-      font-weight: 700
-      color: $title_color
-.modal-header
-  border: none
-  background-color: transparent
-  button
-    background-color: transparent
-.modal-body
-  text-align: center
-  padding-bottom: $medium_space
-  h3
-    margin-bottom: $small_space
-    color: $black_color
-  i
-    font-size: 180px
-    color: $primary_lighten_color
-</style>

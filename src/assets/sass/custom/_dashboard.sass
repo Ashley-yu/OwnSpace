@@ -1,5 +1,3 @@
-@import "@/assets/sass/all.sass";
-
 .manage
   padding: $large_space
   @include medium
@@ -10,8 +8,9 @@
       color: $black_color
       &:hover
         background-color: $primary_color
-  button.btn.btn-sm
-    border: 1px solid $secondary_color
+  .addNewBtn
+    border: none
+  .btn-sm
     i
       font-size: 16px
   .tableMain
@@ -29,13 +28,3 @@
         font-size: 14px
       td
         vertical-align: middle
-.modal-header
-  background-color: $primary_lighten_color
-  span
-    color: $black_color
-  button
-    background-color: transparent
-    span
-      line-height: 30px
-.modal-content
-  border-radius: $radius

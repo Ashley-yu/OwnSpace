@@ -3,7 +3,7 @@
     <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     .text-left.mt-4
-      button.btn(@click='openModal(true)')
+      button.btn.addNewBtn(@click='openModal(true)')
         i.fas.fa-plus-square.mr-1
         | 新增優惠
     <!-- Table 顯示列表項目 -->
@@ -225,7 +225,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="sass">
-@import "@/assets/sass/dashboard.sass";
-</style>
