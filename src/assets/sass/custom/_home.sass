@@ -157,10 +157,14 @@ header
     background-size: cover
     background-position: top center
     background-attachment: fixed
+    transform: translateZ(0);
+    will-change: transform;
     height: 360px
     margin: $large_space 0px
     @include medium
       margin-top: 0px
+    @include small
+      display: none
 //---------- new arrival ----------
 
 //---------- popular ----------
@@ -256,8 +260,7 @@ section#popularCategories
 
 //---------- cooperation ----------
 section#cooperation
-  // *
-  //   border: 1px solid #000
+  overflow: hidden
   padding: 80px
   @include medium
     padding: 80px 15px
@@ -283,8 +286,7 @@ section#cooperation
         font-weight: 900
         color: rgba($primary_lighten_color, 0.7)
         @include medium
-          top: -30px
-          // left: 50%
+          top: -45px
           text-align: right
           font-size: 38px
         @include small
