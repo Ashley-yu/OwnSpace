@@ -126,6 +126,11 @@ export default {
       // 計算小計金額
       vm.total = 0;
       vm.cart.forEach((item) => { vm.total += item.total; });
+
+      if (vm.cartLength === 0) {
+        vm.isNext = true;
+        vm.$router.push('/product_list');
+      }
     },
     // 刪除購物車商品
     removeCartItem(id) {

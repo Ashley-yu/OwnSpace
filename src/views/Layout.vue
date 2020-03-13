@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     .container-fluid.px-0
-      Navbar
+      Navbar(:key="$route.name")
       Alert
       transition(mode="out-in")
         //- 加上key使同一頁面不同參數時重新載入component
