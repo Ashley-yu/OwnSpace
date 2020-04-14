@@ -1,6 +1,6 @@
 <template lang="pug">
   .orderProgress
-    .row
+    .row.m-0
       .col-sm-4
         .step(:class="{'current': currentStep === 1}") Step1
           p 確認購買

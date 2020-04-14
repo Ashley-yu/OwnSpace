@@ -7,8 +7,11 @@
   text-align: center
   border: 1px solid $secondary_color
   border-radius: $radius
-  @include medium
+  @include small
     border: none
+  @include x-small
+    top: 45%
+    margin: 0px $small_space
   ul
     display: inline
     padding: 16px 0px
@@ -20,8 +23,8 @@
       transition: $duration
       color: $black_color
       position: relative
-      @include medium
-        padding: 3px 12px
+      @include x-small
+        padding: 5px 24px
       &::after
         content: ''
         position: absolute

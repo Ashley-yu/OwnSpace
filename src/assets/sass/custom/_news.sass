@@ -14,7 +14,7 @@
   background-color: $primary_color
   padding: 5px
   p
-    margin: 0
+    margin: 0 5px
     font-weight: 300
     letter-spacing: 2px
     color: $white_color
@@ -29,16 +29,21 @@
     color: $white_color
     @include small
       margin-left: $small_space
+    @include x-small
+      margin-left: 10px
+      padding: 4px 10px
     &:hover
       color: $black_color
   .newsClose
     position: absolute
-    top: 50%
+    top: 0
     right: 5%
-    transform: translateY(-50%)
     font-size: 20px
+    line-height: 41px
     color: $white_color
     cursor: pointer
+    @include x-small
+      right: 3%
     &:hover
       color: $black_color
 #getCouponModal

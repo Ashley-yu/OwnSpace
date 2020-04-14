@@ -7,7 +7,7 @@
           p 想要取得商品購物優惠嗎?
           button.btn.btn-sm(@click="openModal") 馬上領取
           .newsClose(@click="isClose = true") X
-      nav.navbar.navbar-expand.d-flex.justify-content-center.align-items-center.navbar_top
+      nav.navbar.navbar-expand.d-flex.justify-content-center.align-items-center
         .container-fluid
           router-link.navbar-brand(to="/")
             i.fas.fa-seedling.mr-1.mr-sm-3
@@ -53,7 +53,7 @@
                             img(:src="`${item.imageUrl}`", alt="")
                         td.itemName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
                         td x{{ item.qty }}
-                        td {{ item.total | currency }}
+                        td {{ item.price | currency }}
                         td.itemDelete(@click.stop="removeCartItem(item.id)")
                           span X
                   .totalInfo
@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       cart: {}, // 購物車資料(localstorage)
-      cartLength: '', // 購物車商品筆數
+      cartLength: 0, // 購物車商品筆數
       favorites: {}, // 喜歡商品資料
       favorLength: '', // 喜歡商品資料筆數
       status: {
@@ -108,10 +108,14 @@ export default {
     getCart() {
       const vm = this;
       vm.cart = JSON.parse(localStorage.getItem('cart')) || [];
-      vm.cartLength = this.cart.length;
-      // 計算小計金額
+      vm.cartLength = 0;
       vm.total = 0;
-      vm.cart.forEach((item) => { vm.total += item.total; });
+      vm.cart.forEach((item) => {
+        // 計算小計金額
+        vm.total += item.total;
+        // 計算商品數量
+        vm.cartLength += item.qty;
+      });
     },
     // 刪除購物車商品
     removeCartItem(id) {
@@ -204,14 +208,6 @@ export default {
       });
     },
   },
-  watch: {
-    // 若購物車無資料則開啟dropdown-menu
-    cartLength(value) {
-      if (value === 0) {
-        $('#cartDropdown').dropdown('show');
-      }
-    },
-  },
   computed: {
     // 結帳階段避免navbar購物車被異動
     avoidClick() {
@@ -223,22 +219,18 @@ export default {
       return false;
     },
   },
+  mounted() {
+    // 進入網頁/重新整理時，若購物車無資料則開啟dropdown-menu
+    if (this.cartLength === 0) {
+      $('#cartDropdown').dropdown('show');
+    }
+  },
   created() {
     const vm = this;
     vm.getCart();
     vm.$bus.$on('cart:get', (status = 0) => vm.getCart(status));
     vm.getFavorites();
     vm.$bus.$on('favor:get', () => vm.getFavorites());
-  },
-  mounted() {
-    // 監測滾輪滑動，離開最上方則移除 class navbar_top
-    $(window).scroll(() => {
-      if ($(window).scrollTop() > 0) {
-        $('.navbar').removeClass('navbar_top');
-      } else {
-        $('.navbar').addClass('navbar_top');
-      }
-    });
   },
 };
 </script>

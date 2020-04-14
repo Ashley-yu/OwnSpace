@@ -1,6 +1,4 @@
 //---------- all ----------
-section
-  min-width: 320px
 .fadInUp
   animation: fadeInUp 2.5s
 //---------- all ----------
@@ -90,6 +88,8 @@ header
     @include medium
       height: 100%
       margin-bottom: 0px
+    @include small
+      padding: $large_space $small_space
     h3
       text-align: center
       color: $black_color
@@ -140,6 +140,10 @@ header
       text-align: center
       padding: $large_space
       position: relative
+      @include small
+        padding: $medium_space $large_space
+      @include x-small
+        padding: $small_space $large_space
       hr
         position: absolute
         left: 50%
@@ -223,6 +227,11 @@ section#popularCategories
           opacity: 0
           &:hover
             opacity: 1
+          @include medium
+            opacity: 1
+            &:hover
+              color: $black_color
+              background-color: transparent
   .background
     display: flex
     justify-content: center

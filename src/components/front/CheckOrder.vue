@@ -1,44 +1,44 @@
 <template lang="pug">
-  div
+  .checkOrder
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container
       OrderProgress(:currentStep='step')
+    .container
       .listContent
+        h3 購買清單
         .row
           .col-12(:class="{'col-md-8': isConfirm}")
-            table.table.orderContent
-              thead
-                tr
-                  th(colspan="2") 商品資訊
-                  th 數量
-                  th 價格
-                  th(v-if="!isConfirm") 刪除
-              tbody
-                tr(v-for="item in cart" :key="item.id")
-                  td.orderImg
-                    .imgArea
+            ul.order
+              li.orderList(v-for="item in cart" :key="item.id")
+                .row
+                  .col-3.p-0(:class="{'col-md-3': isConfirm, 'col-md-2': !isConfirm}")
+                    .productImg
                       img(:src="`${item.imageUrl}`", alt="")
-                  td.text-left.productName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
-                  td.orderColumn(v-if="isConfirm") {{ item.qty }}
-                  td.editColumn(v-else)
-                    .countNumber.d-flex.justify-content-center.align-items-center
-                      button.btn.minus(@click="changeQty(item, -1)")
-                        i.fas.fa-minus
-                      input.productNumber(type='number' max='10' min='1' v-model="item.qty" @change="changeNumber(item, item.qty)")
-                      button.btn.add(@click="changeQty(item, 1)")
-                        i.fas.fa-plus
-                  td.text-right.orderColumn ${{ item.total }}
-                  td.orderColumn(v-if="!isConfirm")
-                    span(@click.prevent="removeCartItem(item.id)")
-                      i.fas.fa-trash
-              tfoot
-                tr
-                  td
-                  td 共 {{ cartLength }} 項
-                  td 總計
-                  td ${{ total }}
-                  td(v-if="!isConfirm")
+                  .col-md-7.p-0(:class="{'col-7': isConfirm, 'col-6': !isConfirm}")
+                    .row.m-0.w-100
+                      .col-12.col-md-7.p-0
+                        .productName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
+                      .col-12.col-md-5.p-0
+                        .productQty(v-if="isConfirm") x {{ item.qty }}
+                        .productNum(v-else)
+                          .countNumber
+                            button.btn.minus(@click="changeQty(item, -1)")
+                              i.fas.fa-minus
+                            input.productNumber(type='number' max='10' min='1' v-model="item.qty" @change="changeNumber(item, item.qty)")
+                            button.btn.add(@click="changeQty(item, 1)")
+                              i.fas.fa-plus
+                  .col-2.p-0
+                    .productTotal {{ item.price | currency }}
+                  .col-1.p-0(v-if="!isConfirm")
+                    .productDel
+                      span(@click.prevent="removeCartItem(item.id)")
+                        i.fas.fa-trash
+              li.orderList.productSummary
+                .row
+                  .col-6.summary 共 {{ cartLength }} 項
+                  .col-3.summary 總計
+                  .summary(:class="{'col-3': isConfirm, 'col-2': !isConfirm}") {{ total | currency }}
+                  .col-1.p-0(v-if="!isConfirm")
             .check(v-if="!isConfirm")
               button.btn(v-if="cartLength === 0" @click.prevent="$router.push('/product_list')")
                 i.fas.fa-store-alt.mr-1

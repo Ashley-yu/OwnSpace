@@ -1,15 +1,33 @@
 <template lang="pug">
-  div
+  .buyerInfo
     <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container
       OrderProgress(:currentStep='step')
-      .buyerInfo
-        .row.m-0.d-flex.justify-content-center
-          .col-11.col-sm-10.col-lg-8
-            form(@submit.prevent="createOrder")
-              .form-row
+    .container
+      .listContent
+        h3 收件資訊
+        .row
+          .col-md-5
+            ul.order
+              li.orderList(v-for="item in cartData.carts" :key="item.id")
+                .row
+                  .col-2.p-0
+                    .productImg
+                      img(:src="`${item.product.imageUrl}`", alt="")
+                  .col-4.p-0
+                    .productName(@click="$router.push(`/product_detail/${item.product.id}`)") {{ item.product.title }}
+                  .col-2.p-0
+                    .productQty x {{ item.qty }}
+                  .col-4.p-0
+                    .productTotal NT {{ item.final_total / item.qty | currency }}
+              li.orderList.productSummary
+                .row
+                  .col-8.col-md-7.summary 總計金額
+                  .col-4.col-md-5.summary NT {{ cartData.final_total | currency }}
+          .col-md-7
+            form.infoArea(@submit.prevent="createOrder")
+              .form-row.userInfo
                 .form-group.col-sm-6
                   label(for='userName') 收件人姓名
                     |
@@ -20,16 +38,16 @@
                   label(for='usertel') 收件人手機
                     |
                     span.marker *
-                  input.form-control#userTel(type="tel" name="tel" :class="{'is-invalid': errors.has('tel')}" v-model="form.user.tel" v-validate="'required|cellphone'" placeholder="請輸入手機號碼 (ex: 09xxxxxxxx)" maxlength="10")
+                  input.form-control#userTel(type="tel" name="tel" :class="{'is-invalid': errors.has('tel')}" v-model="form.user.tel" v-validate="'required|cellphone'" placeholder="09xxxxxxxx" maxlength="10")
                   span.text-danger(v-if="errors.has('tel')") {{ errors.first('tel') }}
               .form-row
-                .form-group.col-sm-8
+                .form-group.col-sm-6
                   label(for='userEmail') 收件人Email
                     |
                     span.marker *
-                  input.form-control#userEmail(type="email" name="email" :class="{'is-invalid': errors.has('email')}" v-model="form.user.email" v-validate="'required'" placeholder="請輸入Email")
+                  input.form-control#userEmail(type="email" name="email" :class="{'is-invalid': errors.has('email')}" v-model="form.user.email" v-validate="'required'" placeholder="your@email.com")
                   span.text-danger(v-if="errors.has('email')") {{ errors.first('email') }}
-                .form-group.col-sm-4
+                .form-group.col-sm-6
                   .select-wrapper
                     label(for='payment') 付款方式
                       |
@@ -47,31 +65,35 @@
               .form-group.mb-5
                 label(for='message') 備註
                 textarea.form-control#message(name="message" cols='10' rows='3' v-model="form.user.message" placeholder="歡迎留下想對我們說的話")
-              .form-group.notice(v-if="form.user.payment === 'CVS'")
-                h5
-                  .backText PAYMENT
-                  i.fas.fa-exclamation-circle.mr-3
-                  | 超商付款
-                ul
-                  li 可至7-11，全家，萊爾富，ok便利商店進行列印單據並且繳款。
-                  li 在完成訂單的頁面，會顯示您此筆交易專屬的超商代碼，請記下這組代碼至鄰近的超商利用服務機器列印帳單進行繳費。
-                  li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期超商代碼將失效，並自動取消訂單。
-              .form-group.notice(v-if="form.user.payment === 'ATM'")
-                h5
-                  .backText PAYMENT
-                  i.fas.fa-exclamation-circle.mr-3
-                  | ATM付款
-                ul
-                  li 包含實體ATM轉帳，或是網路ATM線上轉帳。
-                  li 在完成訂單的頁面，會顯示您此筆交易專屬的虛擬帳號，請記下這組帳號至鄰近的ATM或網路ATM進行轉帳。
-                  li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期虛擬帳號將失效，並自動取消訂單。
-              .d-flex.justify-content-between
+              .btnArea.d-flex.justify-content-between
                 button.btn(@click.prevent="goBack")
                   i.fas.fa-angle-double-left.mr-1
                   | 上一步
                 button.btn(type="submit")
                   | 下一步
                   i.fas.fa-angle-double-right.ml-1
+        .row(v-if="form.user.payment === 'CVS'")
+          .col-sm-12
+            .notice
+              .backText PAYMENT
+              h5
+                i.fas.fa-exclamation-circle.mr-3
+                | 超商付款
+              ul
+                li 可至7-11，全家，萊爾富，ok便利商店進行列印單據並且繳款。
+                li 在完成訂單的頁面，會顯示您此筆交易專屬的超商代碼，請記下這組代碼至鄰近的超商利用服務機器列印帳單進行繳費。
+                li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期超商代碼將失效，並自動取消訂單。
+        .row(v-if="form.user.payment === 'ATM'")
+          .col-sm-12
+            .notice
+              .backText PAYMENT
+              h5
+                i.fas.fa-exclamation-circle.mr-3
+                | 注意事項
+              ul
+                li 包含實體ATM轉帳，或是網路ATM線上轉帳。
+                li 在完成訂單的頁面，會顯示您此筆交易專屬的虛擬帳號，請記下這組帳號至鄰近的ATM或網路ATM進行轉帳。
+                li 繳費期限為訂單成立時間起24小時內須完成交易，若逾期虛擬帳號將失效，並自動取消訂單。
     #leaveBuyerModal.modal.fade.p-0(tabindex='-1' role='dialog' aria-hidden='true' data-backdrop='static')
       .modal-dialog.modal-dialog-centered(role='document')
         .modal-content.border-0
@@ -113,6 +135,25 @@ export default {
     };
   },
   methods: {
+    // 取得購物資料
+    getCartData() {
+      const vm = this;
+      const url = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
+
+      vm.$http.get(url).then((response) => {
+        if (!response.data.success) {
+          vm.$bus.$emit('message:push', response.data.message, 'danger');
+        } else {
+          vm.cartData = response.data.data;
+
+          if (vm.cartData.carts.length > 0) {
+            vm.isConfirm = true;
+          } else {
+            vm.isConfirm = false;
+          }
+        }
+      });
+    },
     // 送出訂單
     createOrder() {
       const vm = this;
@@ -148,32 +189,22 @@ export default {
     // 刪除確認購買商品
     cancelCart() {
       const vm = this;
-      const getUrl = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart`;
+      vm.getCartData();
 
-      vm.$http.get(getUrl).then((response) => {
-        if (!response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'danger');
-        } else {
-          vm.cartData = response.data.data;
-          if (vm.cartData.carts.length > 0) {
-            vm.isConfirm = true;
-          } else {
-            vm.isConfirm = false;
-          }
-
-          if (vm.isConfirm) {
-            vm.cartData.carts.forEach((item) => {
-              const delUurl = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${item.id}`;
-              vm.$http.delete(delUurl).then((res) => {
-                if (!res.data.success) {
-                  vm.$bus.$emit('message:push', res.data.message, 'danger');
-                }
-              });
-            });
-          }
-        }
-      });
+      if (vm.isConfirm) {
+        vm.cartData.carts.forEach((item) => {
+          const delUurl = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/cart/${item.id}`;
+          vm.$http.delete(delUurl).then((res) => {
+            if (!res.data.success) {
+              vm.$bus.$emit('message:push', res.data.message, 'danger');
+            }
+          });
+        });
+      }
     },
+  },
+  created() {
+    this.getCartData();
   },
   beforeRouteLeave(to, from, next) {
     const vm = this;

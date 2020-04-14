@@ -1,34 +1,30 @@
 <template lang="pug">
-  div
+  .orderInfo
     <!-- isLoading： false-停用/ true-啟用 -->
     loading(loader="dots" color="#D1ACA6" :active.sync='isLoading')
     HeaderPic
-    .container
       OrderProgress(:currentStep='step')
+    .container
       .listContent
+        h3 訂單資訊
         .row
           .col-md-6
-            h3 訂單資訊
-            p.text-right.pr-2 訂購日期 - {{ order.create_at | date }}
-            table.table
-              thead
-                tr
-                  th 品名
-                  th 數量
-                  th 價格
-              tbody
-                tr(v-for="item in order.products" :key="item.id")
-                  td.text-left {{ item.product.title }}
-                  td {{ item.qty }} {{ item.product.unit }}
-                  td.text-right NT {{ item.final_total | currency }}
-              tfoot
-                tr
-                  td
-                  td 總計
-                  td NT {{ order.total | currency }}
+            ul.order
+              p.purchaseDate 訂購日期 - {{ order.create_at | date }}
+              li.orderList(v-for="item in order.products" :key="item.id")
+                .row
+                  .col-6.p-0
+                    .productName(@click="$router.push(`/product_detail/${item.product.id}`)") {{ item.product.title }}
+                  .col-2.p-0
+                    .productQty x {{ item.qty }}
+                  .col-4.p-0
+                    .productTotal NT {{ item.final_total / item.qty | currency }}
+                li.orderList.productSummary
+                  .row
+                    .col-8.summary 總計
+                    .col-4.summary NT {{ order.total | currency }}
           .col-md-6
             .infoArea
-              h3 收件人資料
               table.table
                 tbody
                   tr
