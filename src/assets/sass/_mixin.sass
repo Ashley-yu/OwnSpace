@@ -14,6 +14,12 @@
   @media screen and (max-width: 576px)
     @content
 
+// 行動裝置不顯示hover效果
+@mixin hover-supported()
+  @media not all and (pointer: coarse)
+    &:hover
+      @content
+
 @mixin size($width,$height)
   width: $width
   height: $height

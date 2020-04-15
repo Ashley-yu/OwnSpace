@@ -72,7 +72,7 @@
         @include button()
           background-color: $primary_lighten_color
           color: $black_color
-          &:hover
+          @include hover-supported
             background-color: $primary_color
         &.disabled
           pointer-events: none

@@ -46,3 +46,15 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scope>
+.login
+  input
+    -webkit-appearance: none
+    -moz-appearance: none
+    appearance: none
+    margin: 0
+    outline: 0 !important
+    -webkit-box-shadow: none !important
+    box-shadow: none  !important
+</style>
