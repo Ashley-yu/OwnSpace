@@ -34,7 +34,7 @@
                           i.fas.fa-spinner.fa-spin.disabled(@click.stop="" v-else)
                         td.itemPicture
                           .picturewrap
-                            img(:src="`${item.imageUrl}`", alt="")
+                            img(:src="item.imageUrl", alt="")
                         td.itemName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
                         td.itemDelete(@click.stop="removeFavorItem(item)")
                           span X
@@ -50,7 +50,7 @@
                       tr(v-for="item in cart" :key="item.id")
                         td.itemPicture
                           .picturewrap
-                            img(:src="`${item.imageUrl}`", alt="")
+                            img(:src="item.imageUrl", alt="")
                         td.itemName(@click="$router.push(`/product_detail/${item.id}`)") {{ item.title }}
                         td x{{ item.qty }}
                         td {{ item.price | currency }}

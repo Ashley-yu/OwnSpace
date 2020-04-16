@@ -16,7 +16,7 @@
       .row.m-0
         .col-md-7.col-lg-6
           .productPicture
-            img(:src="`${product.imageUrl}`", alt="")
+            img(:src="product.imageUrl", alt="")
         .col-md-5.col-lg-6
           ul.productInfo
             li
@@ -75,9 +75,9 @@
         h5 類似商品
         .row.similar
           .col-lg-3.col-md-4.col-sm-6.col-12(v-for="item in filterSimilarProducts" :key="item.id")
-            .productCard(@click.prevent="$router.push(`/product_detail/${item.id}`)")
+            .productCard(@click.prevent="getDetail(item.id)")
               .imgWrap
-                img(:src="`${item.imageUrl}`" alt='')
+                img(:src="item.imageUrl" alt='')
               .cardText {{ item.title }}
               .cardText.text-right NT {{ item.price | currency }}
 </template>
@@ -107,6 +107,7 @@ export default {
     // 取得單件商品資料
     getProduct() {
       const vm = this;
+      vm.productId = vm.$route.params.product_id;
       const api = `${process.env.VUE_APP_APIPATH}/api/${process.env.VUE_APP_CUSTOMPATH}/product/${vm.productId}`;
 
       vm.isLoading = true;
@@ -203,6 +204,12 @@ export default {
         }
       });
     },
+    // 取得新一筆商品資料
+    getDetail(id) {
+      const vm = this;
+      vm.$router.push(`/product_detail/${id}`);
+      vm.getProduct();
+    },
   },
   computed: {
     filterSimilarProducts() {
@@ -212,7 +219,7 @@ export default {
   },
   created() {
     // 存商品 id
-    this.productId = this.$route.params.product_id;
+    // this.productId = this.$route.params.product_id;
     this.getProduct();
     this.getProducts();
     this.getCart();

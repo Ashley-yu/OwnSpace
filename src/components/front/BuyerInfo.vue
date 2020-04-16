@@ -14,7 +14,7 @@
                 .row
                   .col-2.p-0
                     .productImg
-                      img(:src="`${item.product.imageUrl}`", alt="")
+                      img(:src="item.product.imageUrl", alt="")
                   .col-4.p-0
                     .productName(@click="$router.push(`/product_detail/${item.product.id}`)") {{ item.product.title }}
                   .col-2.p-0

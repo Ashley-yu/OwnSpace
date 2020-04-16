@@ -13,7 +13,7 @@
                 .row
                   .col-3.p-0(:class="{'col-md-3': isConfirm, 'col-md-2': !isConfirm}")
                     .productImg
-                      img(:src="`${item.imageUrl}`", alt="")
+                      img(:src="item.imageUrl", alt="")
                   .col-md-7.p-0(:class="{'col-7': isConfirm, 'col-6': !isConfirm}")
                     .row.m-0.w-100
                       .col-12.col-md-7.p-0

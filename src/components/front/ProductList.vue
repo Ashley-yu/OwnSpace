@@ -11,7 +11,7 @@
             .soldOut(v-if="!item.is_enabled")
               h6 已售完
             .top
-              img(:src="`${item.imageUrl}`", alt="")
+              img(:src="item.imageUrl", alt="")
               .tag(v-if="item.price !== item.origin_price") 特價中
             .bottom
               h3 {{ item.title }}
