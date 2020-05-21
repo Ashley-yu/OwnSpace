@@ -9,20 +9,17 @@
        aria-expanded="false")
           i.fas.fa-bars.navbarToggler-icon
         .collapse.navbar-collapse.ml-3#topbarContent
-          ul.navbar-nav.mr-1
+          ul.navbar-nav.mr-auto
             li.nav-item
               router-link.nav-link(to="/admin/products") 產品列表
-          ul.navbar-nav.mr-1
             li.nav-item
               router-link.nav-link(to="/admin/orders") 訂單列表
-          ul.navbar-nav.mr-auto
             li.nav-item
               router-link.nav-link(to="/admin/coupons") 優惠方案
           ul.navbar-nav
             li.nav-item
               .nav-link(@click.prevent="$router.push(`/product_list`)")
                 i.fas.fa-store-alt
-          ul.navbar-nav
             li.nav-item
               .nav-link(href='#' @click.prevent='signout')
                 i.fas.fa-sign-out-alt

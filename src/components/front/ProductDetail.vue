@@ -74,7 +74,7 @@
       .similarContent
         h5 類似商品
         .row.similar
-          .col-lg-3.col-md-4.col-sm-6.col-12(v-for="item in filterSimilarProducts" :key="item.id")
+          .col-lg-3.col-md-4.col-sm-6.col-12.d-flex.justify-content-center.align-items-center(v-for="item in filterSimilarProducts" :key="item.id")
             .productCard(@click.prevent="getDetail(item.id)")
               .imgWrap
                 img(:src="item.imageUrl" alt='')
@@ -218,8 +218,6 @@ export default {
     },
   },
   created() {
-    // 存商品 id
-    // this.productId = this.$route.params.product_id;
     this.getProduct();
     this.getProducts();
     this.getCart();

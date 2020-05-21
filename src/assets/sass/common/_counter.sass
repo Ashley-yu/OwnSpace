@@ -1,10 +1,12 @@
 .countNumber
   .minus,.add,.productNumber
-    @include small
-      min-height: 36px
-  .minus,.add
     padding: 4px 10px
     border: 1px solid $secondary_color
+    @include small
+      min-height: 36px
+    @include x-small
+      padding: 8px 15px
+  .minus,.add
     &:hover
       color: $primary_color
       border: 1px solid $primary_color
@@ -15,9 +17,7 @@
   .productNumber
     text-align: center
     width: 15%
-    min-width: 60px
-    padding: 4px 10px
-    border: 1px solid $secondary_color
+    min-width: 68px
     border-radius: 0px
     -webkit-border-radius: 0px
     -moz-border-radius: 0px

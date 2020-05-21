@@ -13,7 +13,7 @@
             i.fas.fa-seedling.mr-1.mr-sm-3
             span Own Space
           .collapse.navbar-collapse.ml-1.ml-sm-3#navbarContent
-            ul.navbar-nav.mr-auto
+            ul.navbar-nav.mr-sm-auto.ml-auto.ml-sm-0
               li.nav-item
                 router-link.nav-link(to="/product_list")
                   i.fas.fa-store-alt.mr-1

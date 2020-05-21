@@ -33,8 +33,6 @@ header
         font-weight: 800
         letter-spacing: 5px
         color: $white_color
-        @include large
-          left: 30%
         @include medium
           left: 15%
         @include small
@@ -49,16 +47,22 @@ header
         line-height: 50px
         letter-spacing: 3px
         color: $white_color
-        @include large
-          top: 33%
-          left: 35%
         @include medium
-          left: 30%
+          left: 25%
         @include small
           left: 15%
+          top: 33%
           width: 75%
           line-height: 30px
           font-size: 20px
+        button.btn
+          font-size: 16px
+          margin: 10px
+          @include button()
+            color: $white_color
+            background-color: $primary_color
+            &:hover
+              background-color: $black_color
   .explore
     position: absolute
     bottom: 8%

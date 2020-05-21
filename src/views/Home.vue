@@ -9,17 +9,26 @@
               .pictureBox
               h1 簡潔。俐落
               h3 隨手可得的實用文具，崇尚自然簡約的風格
+                button.btn(@click.prevent="$router.push('/product_list')")
+                  i.fas.fa-arrow-right.mr-1
+                  | 逛起來
             .carousel-item
               img.picture(src='../assets/img/green_succulent_plant.jpg' alt='')
               .pictureBox
               h1 生活。質感
               h3 幾樣實用小物就能營造出不同的氛圍，轉換美好心情
+                button.btn(@click.prevent="$router.push('/product_list')")
+                  i.fas.fa-arrow-right.mr-1
+                  | 逛起來
             .carousel-item
               img.picture(src='../assets/img/table.jpg' alt='')
               .pictureBox
               h1 空間。創意
               h3 百搭色調的物品，隨意擺放都別有意境
-      .explore(href="#sectionNewArrival" @click.prevent="scrollIntoView('#sectionNewArrival')") 查看更多
+                button.btn(@click.prevent="$router.push('/product_list')")
+                  i.fas.fa-arrow-right.mr-1
+                  | 逛起來
+      .explore(href="#sectionNewArrival" @click.prevent="scrollIntoView('#sectionNewArrival')")
         i.fas.fa-angle-double-down
     section#sectionNewArrival
       .container-fluid.p-0
