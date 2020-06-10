@@ -173,7 +173,7 @@ export default {
               vm.$router.push(`/order_info/${response.data.orderId}`);
             } else {
               vm.$bus.$emit('message:push', response.data.message, 'danger');
-              vm.$router.push('/product_list');
+              vm.$router.push('/check_order');
             }
           });
         } else {

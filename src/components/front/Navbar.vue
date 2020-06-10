@@ -228,7 +228,7 @@ export default {
   created() {
     const vm = this;
     vm.getCart();
-    vm.$bus.$on('cart:get', (status = 0) => vm.getCart(status));
+    vm.$bus.$on('cart:get', () => vm.getCart());
     vm.getFavorites();
     vm.$bus.$on('favor:get', () => vm.getFavorites());
   },

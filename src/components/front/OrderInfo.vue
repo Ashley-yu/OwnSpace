@@ -65,7 +65,7 @@
               span(aria-hidden='true') &times;
           .modal-body.completeMessage
             h3 付款完成
-            i.fas.fa-check-circle
+            i.fas.fa-check-circle.ckeckIcon
 </template>
 
 <script>
@@ -114,8 +114,6 @@ export default {
         vm.isLoading = false;
         if (response.data.success) {
           vm.getOrder();
-          // 重新整理 Navbar 購物車
-          vm.$bus.$emit('cart:get');
           $('#completeModal').modal('show');
         } else {
           vm.$bus.$emit('message:push', response.data.message, 'danger');

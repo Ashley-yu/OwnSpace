@@ -59,7 +59,6 @@ export default {
       isLoading: false, // loading 圖示顯示狀態
       favorites: [], // 存 localstorage-案讚商品 資料
       cart: [], // 存 localstorage-購物車 資料
-      // tempCart: [], // 暫存購物車變更資料
     };
   },
   methods: {
